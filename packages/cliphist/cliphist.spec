@@ -1,7 +1,7 @@
 Name:          cliphist
 # renovate: datasource=github-releases depName=sentriz/cliphist
-Version:       0.7.1
-Release:       1%{?dist}
+Version:       0.7.0
+Release:       0%{?dist}
 Summary:       Clipboard history "manager" for Wayland
 Vendor:        sentriz
 URL:           https://github.com/%{vendor}/%{name}
@@ -30,7 +30,4 @@ install -Dpm 0755  -t %{buildroot}%{_bindir}/ %{name}
 %{_bindir}/%{name}
 
 %changelog
-* Mon Jan 05 2026 John Flynn <johndangerflynn@gmail.com> 0.7.1-1
-- new package built with tito
-
 %autochangelog

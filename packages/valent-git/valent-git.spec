@@ -6,7 +6,7 @@
 
 Name:               valent-git
 Version:            %shortcommit
-Release:            1%?dist
+Release:            0%?dist
 Summary:            Connect, control and sync devices
 License:            GPL-3.0-or-later
 URL:                https://github.com/andyholmes/valent
@@ -69,8 +69,10 @@ rm -r subprojects/gvc*
 tar -xf %{SOURCE1} -C subprojects
 mv subprojects/libgnome-volume-control* subprojects/gvc
 
-%build
+%conf
 %meson
+
+%build
 %meson_build
 
 %install
@@ -114,7 +116,4 @@ mv subprojects/libgnome-volume-control* subprojects/gvc
 %{_sysconfdir}/xdg/autostart/ca.andyholmes.Valent-autostart.desktop
 
 %changelog
-* Mon Jan 05 2026 John Flynn <johndangerflynn@gmail.com> 6da1069-1
-- new package built with tito
-
 %autochangelog
