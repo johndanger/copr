@@ -1,3 +1,3 @@
 # MangosteenOS COPR
 
-Primary reason for these packages is that DMS requires Matugen version greater than 3.0 to generate colorschems from wallpaper. Also included cliphist as its a requirement too.
+Primary reason for these packages is that DMS requires Matugen version greater than 3.0 to generate colorschemes from wallpaper. Also currently pulling in MangoWC from terra repository and would like to pull it from my repo.
