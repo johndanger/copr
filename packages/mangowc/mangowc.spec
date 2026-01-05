@@ -1,11 +1,11 @@
 Name:           mangowc
 Version:        0.10.10
-Release:        1%?dist
+Release:        1%{?dist}
 Summary:        wayland compositor base wlroots and scenefx (dwm but wayland)
 License:        GPL-3.0
 Packager:       metcya <metcya@gmail.com>
 URL:            https://github.com/DreamMaoMao/mangowc
-Source:         %{url}/archive/%{version}.tar.gz
+Source0:        %{url}/archive/%{version}.tar.gz
 
 BuildRequires:  meson
 BuildRequires:  gcc

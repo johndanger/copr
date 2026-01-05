@@ -1,0 +1,20 @@
+# SOURCES directories - COPR will download sources automatically
+packages/*/SOURCES/
+packages/*/SOURCES
+
+# Tito build artifacts
+tito/
+*.tar.gz
+*.src.rpm
+*.rpm
+
+# Build directories
+BUILD/
+BUILDROOT/
+RPMS/
+SRPMS/
+
+# Temporary files
+*.tmp
+*.log
+
