@@ -150,8 +150,6 @@ mv assets/icons/LICENSES LICENSE.icons
 mv assets/themes/LICENSES LICENSE.themes
 mv assets/fonts/ibm-plex-sans/license.txt LICENSE.fonts
 
-%terra_appstream -o %{SOURCE1}
-
 %if %{with check}
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%appid.metainfo.xml
