@@ -114,6 +114,14 @@ This repository contains complete automation for building and maintaining Copr p
 - Configures all packages in Copr at once
 - Perfect for: Initial setup
 
+### Security Documentation
+📄 **[SECURITY.md](SECURITY.md)**
+- Security best practices
+- Secret handling and protection
+- Threat model and incident response
+- Credential rotation procedures
+- Perfect for: Understanding security measures
+
 ---
 
 ## 🎯 Quick Links by Task
@@ -314,10 +322,11 @@ Before you start using the automation:
 | [PACKAGE_DEPENDENCIES.md](PACKAGE_DEPENDENCIES.md) | ~320 | Dependency guide | 15 min |
 | [DEPENDENCIES_QUICK_REF.md](DEPENDENCIES_QUICK_REF.md) | ~146 | Dependency quick ref | 5 min |
 | [UPDATED_WORKFLOW.md](UPDATED_WORKFLOW.md) | ~280 | SCM workflow guide | 10 min |
+| [SECURITY.md](SECURITY.md) | ~330 | Security guide | 15 min |
 | [../.github/SETUP_CHECKLIST.md](../.github/SETUP_CHECKLIST.md) | ~114 | Setup tracker | 5 min |
 | [PACKAGE_TEMPLATE.spec](PACKAGE_TEMPLATE.spec) | ~76 | Template | 5 min |
 
-**Total documentation**: ~3,000+ lines | Comprehensive coverage
+**Total documentation**: ~3,300+ lines | Comprehensive coverage
 
 ---
 
@@ -331,6 +340,9 @@ If you only read three files, make them:
 
 If you have packages with dependencies, also read:
 4. **[DEPENDENCIES_QUICK_REF.md](DEPENDENCIES_QUICK_REF.md)** - Dependency handling
+
+For security concerns:
+5. **[SECURITY.md](SECURITY.md)** - Security best practices
 
 ---
 

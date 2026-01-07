@@ -215,7 +215,7 @@ And the Copr package configuration has:
 **Cause:** The workflow failed to install copr-cli
 
 **Solution:**
-This should be automatic, but you can check the workflow logs. The workflow uses DNF to install `copr-cli` on the GitHub Actions runner.
+This should be automatic. The workflow uses a Fedora container to properly install `copr-cli` with DNF. Check the workflow logs if issues persist.
 
 ### Issue: Builds not triggering automatically
 
@@ -280,10 +280,25 @@ You can add Slack, Discord, or email notifications by adding steps to the `notif
 ## Security Notes
 
 - ✅ Copr API tokens are stored as encrypted GitHub secrets
-- ✅ Tokens are never exposed in logs
+- ✅ Tokens are never exposed in logs (using heredoc to write config file)
+- ✅ Workflow uses Fedora container to safely install copr-cli
+- ✅ Config file has 600 permissions (owner read/write only)
 - ✅ The workflow only has access to secrets, not your local credentials
 - ⚠️ Be careful about building from external PRs (disabled by default)
 - ✅ Copr builds from your repository, ensuring source code authenticity
+
+### How Secrets Are Protected
+
+The workflow uses a heredoc (`<< 'EOF'`) to write the Copr configuration to prevent the secret from appearing in command-line arguments or logs:
+
+```yaml
+cat > ~/.config/copr << 'EOF'
+${{ secrets.COPR_CONFIG }}
+EOF
+chmod 600 ~/.config/copr
+```
+
+This is more secure than using `echo` which could expose the secret in process listings.
 
 ## Package Configuration Template
 

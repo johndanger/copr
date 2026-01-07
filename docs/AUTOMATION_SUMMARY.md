@@ -91,6 +91,8 @@ This repository now has **full automation** for building and maintaining Copr pa
 - ✅ **Manual triggers** - Can manually rebuild specific packages
 - ✅ **Status summaries** - Clear build status in GitHub UI
 - ✅ **No SRPM management** - Copr handles source packaging
+- ✅ **Secure secret handling** - Credentials never exposed in logs
+- ✅ **Container-based** - Uses Fedora container for proper environment
 
 ### 🎯 Supported Package Types
 
@@ -228,10 +230,29 @@ See [COPR_AUTOMATION_SETUP.md](COPR_AUTOMATION_SETUP.md) for detailed troublesho
 ## 🔐 Security Considerations
 
 - 🔒 API tokens stored as encrypted GitHub secrets
-- 🔒 Secrets never exposed in logs or outputs
+- 🔒 Secrets never exposed in logs or outputs (using heredoc to write config)
+- 🔒 Workflow uses Fedora container for safe package installation
+- 🔒 Config files have restrictive permissions (600)
 - 🔒 Workflow only runs on main branch (not external PRs)
 - 🔒 Manual approval required for Renovate PRs
 - 🔒 Copr builds run in isolated environments
+
+### How Secrets Are Protected
+
+The workflow uses secure methods to handle your Copr API credentials:
+
+1. **Heredoc syntax** prevents secrets from appearing in process listings:
+   ```yaml
+   cat > ~/.config/copr << 'EOF'
+   ${{ secrets.COPR_CONFIG }}
+   EOF
+   ```
+
+2. **Fedora container** ensures proper environment for copr-cli (DNF package manager)
+
+3. **File permissions** set to 600 (owner read/write only)
+
+4. **No echo to stdout** - secrets never printed to logs
 
 ## ❓ FAQ
 

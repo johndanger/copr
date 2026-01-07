@@ -49,18 +49,22 @@ jobs:
     needs: detect-changes
     if: contains(needs.detect-changes.outputs.packages, 'mangowc') || contains(needs.detect-changes.outputs.packages, 'scenefx')
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Install copr-cli
         run: |
-          sudo dnf install -y copr-cli
+          dnf install -y copr-cli
 
       - name: Configure copr-cli
         run: |
           mkdir -p ~/.config
-          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          cat > ~/.config/copr << 'EOF'
+          ${{ secrets.COPR_CONFIG }}
+          EOF
           chmod 600 ~/.config/copr
 
       - name: Build scenefx first (dependency)
@@ -75,6 +79,8 @@ jobs:
     needs: [detect-changes, build-dependencies]
     if: always() && needs.detect-changes.outputs.packages != '[]'
     runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
     strategy:
       matrix:
         package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
@@ -85,12 +91,14 @@ jobs:
 
       - name: Install copr-cli
         run: |
-          sudo dnf install -y copr-cli
+          dnf install -y copr-cli
 
       - name: Configure copr-cli
         run: |
           mkdir -p ~/.config
-          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          cat > ~/.config/copr << 'EOF'
+          ${{ secrets.COPR_CONFIG }}
+          EOF
           chmod 600 ~/.config/copr
 
       - name: Skip if already built
