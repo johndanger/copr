@@ -15,19 +15,19 @@ This repository uses automated builds powered by:
 
 1. **Configure packages in Copr** (one-time setup):
    ```bash
-   ./setup-copr-packages.sh username/projectname your-github-username
+   ./scripts/setup-copr-packages.sh username/projectname your-github-username
    ```
 
-2. **Add GitHub secrets** (see [QUICK_START.md](QUICK_START.md)):
+2. **Add GitHub secrets** (see [docs/QUICK_START.md](docs/QUICK_START.md)):
    - `COPR_CONFIG` - Your Copr API configuration
    - `COPR_PROJECT` - Your Copr project identifier
 
 3. **Test it** - Trigger a manual build from GitHub Actions
 
 ### Full Documentation
-- **[QUICK_START.md](QUICK_START.md)** - 5-minute setup guide
-- **[COPR_AUTOMATION_SETUP.md](COPR_AUTOMATION_SETUP.md)** - Detailed instructions
-- **[INDEX.md](INDEX.md)** - Complete documentation index
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - 5-minute setup guide
+- **[docs/COPR_AUTOMATION_SETUP.md](docs/COPR_AUTOMATION_SETUP.md)** - Detailed instructions
+- **[docs/INDEX.md](docs/INDEX.md)** - Complete documentation index
 
 ## 📦 Packages
 
@@ -42,7 +42,7 @@ This repository uses automated builds powered by:
 
 - **scenefx** → **mangowc** (mangowc depends on scenefx)
 - The workflow automatically builds scenefx before mangowc when both change
-- See [PACKAGE_DEPENDENCIES.md](PACKAGE_DEPENDENCIES.md) for details
+- See [docs/PACKAGE_DEPENDENCIES.md](docs/PACKAGE_DEPENDENCIES.md) for details
 
 ## 🔄 How It Works
 
@@ -57,7 +57,7 @@ This repository uses automated builds powered by:
 
 1. Create `packages/newpackage/newpackage.spec` using the template:
    ```bash
-   cp .github/PACKAGE_TEMPLATE.spec packages/newpackage/newpackage.spec
+   cp docs/PACKAGE_TEMPLATE.spec packages/newpackage/newpackage.spec
    ```
 
 2. Configure the package in Copr:
@@ -69,14 +69,27 @@ This repository uses automated builds powered by:
      --type git --method make_srpm
    ```
 
-3. Add Renovate comment for auto-updates:
+3. Add Renovate comment for auto-updates inside your spec file:
+   
+   Edit `packages/newpackage/newpackage.spec` and add the comment above the `Version:` line:
    ```spec
+   Name:           newpackage
    # renovate: datasource=github-releases depName=owner/repo
    Version:        1.0.0
+   Release:        1%{?dist}
+   Summary:        Your package description
+   ```
+   
+   **Example from matugen package:**
+   ```spec
+   Name:           matugen
+   # renovate: datasource=github-releases depName=InioX/matugen
+   Version:        3.1.0
+   Release:        0%{?dist}
    ```
 
 4. Commit and push - automated builds will handle the rest!
 
 **Note:** If your package depends on other packages, add `BuildRequires` to the spec file and ensure dependencies are built first.
 
-See **[COMMANDS.md](COMMANDS.md)** for more details and **[PACKAGE_DEPENDENCIES.md](PACKAGE_DEPENDENCIES.md)** for dependency handling.
+See **[docs/COMMANDS.md](docs/COMMANDS.md)** for more details and **[docs/PACKAGE_DEPENDENCIES.md](docs/PACKAGE_DEPENDENCIES.md)** for dependency handling.

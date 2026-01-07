@@ -15,14 +15,14 @@ This repository contains complete automation for building and maintaining Copr p
 **Start here if you're setting up for the first time:**
 
 ### 1. Quick Start (5 minutes)
-📄 **[QUICK_START.md](QUICK_START.md)**
+📄 **[QUICK_START.md](QUICK_START.md)** (you are in docs/)
 - Fastest way to get up and running
 - Step-by-step setup instructions
 - Common operations cheat sheet
 - Perfect for: First-time setup
 
 ### 2. Detailed Setup Guide
-📄 **[COPR_AUTOMATION_SETUP.md](COPR_AUTOMATION_SETUP.md)**
+📄 **[COPR_AUTOMATION_SETUP.md](COPR_AUTOMATION_SETUP.md)** (you are in docs/)
 - Complete setup walkthrough
 - Detailed explanations
 - Troubleshooting section
@@ -30,7 +30,7 @@ This repository contains complete automation for building and maintaining Copr p
 - Perfect for: Understanding how everything works
 
 ### 3. Setup Checklist
-📄 **[.github/SETUP_CHECKLIST.md](.github/SETUP_CHECKLIST.md)**
+📄 **[../.github/SETUP_CHECKLIST.md](../.github/SETUP_CHECKLIST.md)**
 - Interactive checklist format
 - Track your progress
 - Verify everything is configured correctly
@@ -75,7 +75,7 @@ This repository contains complete automation for building and maintaining Copr p
 ## 🛠️ Templates & Tools
 
 ### Package Template
-📄 **[.github/PACKAGE_TEMPLATE.spec](.github/PACKAGE_TEMPLATE.spec)**
+📄 **[PACKAGE_TEMPLATE.spec](PACKAGE_TEMPLATE.spec)** (you are in docs/)
 - Template spec file
 - Common build patterns
 - Renovate comment examples
@@ -95,21 +95,21 @@ This repository contains complete automation for building and maintaining Copr p
 - Perfect for: Quick dependency lookups
 
 ### GitHub Actions Workflow
-📄 **[.github/workflows/copr-build.yml](.github/workflows/copr-build.yml)**
+📄 **[../.github/workflows/copr-build.yml](../.github/workflows/copr-build.yml)**
 - Main automation workflow
 - Dependency-aware build ordering
 - Copr rebuild triggers
 - Perfect for: Understanding/modifying automation
 
 ### Renovate Configuration
-📄 **[.github/renovate.json5](.github/renovate.json5)**
+📄 **[../.github/renovate.json5](../.github/renovate.json5)**
 - Renovate Bot settings
 - Custom managers for spec files
 - Version detection patterns
 - Perfect for: Configuring auto-updates
 
 ### Setup Script
-📄 **[setup-copr-packages.sh](setup-copr-packages.sh)**
+📄 **[../scripts/setup-copr-packages.sh](../scripts/setup-copr-packages.sh)**
 - Automated package configuration
 - Configures all packages in Copr at once
 - Perfect for: Initial setup
@@ -122,11 +122,11 @@ This repository contains complete automation for building and maintaining Copr p
 
 #### Set up automation for the first time
 1. Read [QUICK_START.md](QUICK_START.md)
-2. Follow [.github/SETUP_CHECKLIST.md](.github/SETUP_CHECKLIST.md)
+2. Follow [../.github/SETUP_CHECKLIST.md](../.github/SETUP_CHECKLIST.md)
 3. Test with manual workflow run
 
 #### Add a new package
-1. Copy [.github/PACKAGE_TEMPLATE.spec](.github/PACKAGE_TEMPLATE.spec)
+1. Copy [PACKAGE_TEMPLATE.spec](PACKAGE_TEMPLATE.spec)
 2. Customize for your package
 3. Add Renovate comment
 4. Commit and push
@@ -137,8 +137,8 @@ This repository contains complete automation for building and maintaining Copr p
 3. Click "Run workflow"
 
 #### Check build status
-- **GitHub**: https://github.com/YOUR_USERNAME/copr/actions
-- **Copr**: https://copr.fedorainfracloud.org/coprs/YOUR_PROJECT/builds/
+- **GitHub Actions**: https://github.com/YOUR_USERNAME/copr/actions
+- **Copr Builds**: https://copr.fedorainfracloud.org/coprs/YOUR_PROJECT/builds/
 
 #### Troubleshoot a failed build
 1. Check [COPR_AUTOMATION_SETUP.md](COPR_AUTOMATION_SETUP.md) troubleshooting section
@@ -183,9 +183,9 @@ This repository contains complete automation for building and maintaining Copr p
 
 | File | Purpose | Modify? |
 |------|---------|---------|
-| `.github/workflows/copr-build.yml` | Main automation | Rarely |
-| `.github/renovate.json5` | Version detection | Occasionally |
-| `packages/*/*.spec` | Package definitions | Frequently |
+| `../.github/workflows/copr-build.yml` | Main automation | Rarely |
+| `../.github/renovate.json5` | Version detection | Occasionally |
+| `../packages/*/*.spec` | Package definitions | Frequently |
 
 ---
 
@@ -314,8 +314,8 @@ Before you start using the automation:
 | [PACKAGE_DEPENDENCIES.md](PACKAGE_DEPENDENCIES.md) | ~320 | Dependency guide | 15 min |
 | [DEPENDENCIES_QUICK_REF.md](DEPENDENCIES_QUICK_REF.md) | ~146 | Dependency quick ref | 5 min |
 | [UPDATED_WORKFLOW.md](UPDATED_WORKFLOW.md) | ~280 | SCM workflow guide | 10 min |
-| [.github/SETUP_CHECKLIST.md](.github/SETUP_CHECKLIST.md) | ~114 | Setup tracker | 5 min |
-| [.github/PACKAGE_TEMPLATE.spec](.github/PACKAGE_TEMPLATE.spec) | ~76 | Template | 5 min |
+| [../.github/SETUP_CHECKLIST.md](../.github/SETUP_CHECKLIST.md) | ~114 | Setup tracker | 5 min |
+| [PACKAGE_TEMPLATE.spec](PACKAGE_TEMPLATE.spec) | ~76 | Template | 5 min |
 
 **Total documentation**: ~3,000+ lines | Comprehensive coverage
 
