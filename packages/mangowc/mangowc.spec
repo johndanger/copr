@@ -1,4 +1,5 @@
 Name:           mangowc
+# renovate: datasource=github-releases depName=DreamMaoMao/mangowc
 Version:        0.10.10
 Release:        1%{?dist}
 Summary:        wayland compositor base wlroots and scenefx (dwm but wayland)
@@ -38,10 +39,10 @@ MangoWC is a lightweight, high-performance Wayland compositor built on dwl, desi
 %doc README.md
 %license LICENSE
 %license LICENSE.wlroots
-%license LICENSE.tinywl 
-%license LICENSE.sway 
-%license LICENSE.dwm 
-%license LICENSE.dwl 
+%license LICENSE.tinywl
+%license LICENSE.sway
+%license LICENSE.dwm
+%license LICENSE.dwl
 %{_bindir}/mango
 %{_bindir}/mmsg
 %{_sysconfdir}/mango/config.conf

@@ -1,0 +1,146 @@
+name: Trigger Copr Builds
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "packages/*/*.spec"
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Specific package to build (leave empty for all changed packages)"
+        required: false
+        type: string
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.changes.outputs.packages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed packages
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ inputs.package }}" ]; then
+            # Manual trigger with specific package
+            echo "packages=[\"${{ inputs.package }}\"]" >> $GITHUB_OUTPUT
+          else
+            # For pushes, detect changed spec files in the last commit
+            CHANGED_SPECS=$(git diff --name-only HEAD~1 HEAD | grep 'packages/.*/.*\.spec$' || true)
+            if [ -z "$CHANGED_SPECS" ]; then
+              echo "packages=[]" >> $GITHUB_OUTPUT
+            else
+              PACKAGES=$(echo "$CHANGED_SPECS" | sed 's|packages/\([^/]*\)/.*|\1|' | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
+              echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Display detected packages
+        run: |
+          echo "Detected packages to build: ${{ steps.changes.outputs.packages }}"
+
+  build-dependencies:
+    needs: detect-changes
+    if: contains(needs.detect-changes.outputs.packages, 'mangowc') || contains(needs.detect-changes.outputs.packages, 'scenefx')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install copr-cli
+        run: |
+          sudo dnf install -y copr-cli
+
+      - name: Configure copr-cli
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          chmod 600 ~/.config/copr
+
+      - name: Build scenefx first (dependency)
+        if: contains(needs.detect-changes.outputs.packages, 'scenefx')
+        run: |
+          echo "🔨 Building scenefx first (required by mangowc)..."
+          copr-cli build-package --name scenefx ${{ secrets.COPR_PROJECT }} --nowait
+          echo "⏳ Waiting for scenefx build to start processing..."
+          sleep 60
+
+  build:
+    needs: [detect-changes, build-dependencies]
+    if: always() && needs.detect-changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.detect-changes.outputs.packages) }}
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install copr-cli
+        run: |
+          sudo dnf install -y copr-cli
+
+      - name: Configure copr-cli
+        run: |
+          mkdir -p ~/.config
+          echo "${{ secrets.COPR_CONFIG }}" > ~/.config/copr
+          chmod 600 ~/.config/copr
+
+      - name: Skip if already built
+        id: check_skip
+        run: |
+          # Skip scenefx if it was already built in build-dependencies job
+          if [ "${{ matrix.package }}" = "scenefx" ] && [ "${{ needs.build-dependencies.result }}" = "success" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭️  scenefx already triggered in dependencies job, skipping"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger Copr package rebuild
+        if: steps.check_skip.outputs.skip != 'true'
+        run: |
+          echo "Triggering rebuild for package: ${{ matrix.package }}"
+          copr-cli build-package --name ${{ matrix.package }} ${{ secrets.COPR_PROJECT }} --nowait
+
+      - name: Report status
+        if: success() && steps.check_skip.outputs.skip != 'true'
+        run: |
+          echo "✅ Copr build triggered for ${{ matrix.package }}"
+          echo "🔗 Check status at: https://copr.fedorainfracloud.org/coprs/${{ secrets.COPR_PROJECT }}/packages/${{ matrix.package }}"
+          echo "🔗 All builds: https://copr.fedorainfracloud.org/coprs/${{ secrets.COPR_PROJECT }}/builds/"
+
+  notify:
+    needs: [detect-changes, build-dependencies, build]
+    if: always() && needs.detect-changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build summary
+        run: |
+          echo "## 🚀 Copr Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Packages processed:** ${{ needs.detect-changes.outputs.packages }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Build status:** ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Check builds at:** https://copr.fedorainfracloud.org/coprs/${{ secrets.COPR_PROJECT }}/builds/" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ All package rebuilds triggered successfully!" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ needs.build-dependencies.result }}" == "success" ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "📦 **Note:** scenefx was built first to satisfy mangowc dependency" >> $GITHUB_STEP_SUMMARY
+            fi
+          elif [ "${{ needs.build.result }}" == "failure" ]; then
+            echo "❌ Some builds failed to trigger. Check the logs above for details." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Builds completed with status: ${{ needs.build.result }}" >> $GITHUB_STEP_SUMMARY
+          fi

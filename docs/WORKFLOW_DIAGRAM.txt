@@ -1,0 +1,340 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    COPR AUTOMATION WORKFLOW DIAGRAM                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 1: UPSTREAM RELEASE                                                    │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+    ┌─────────────────────────────────────┐
+    │   Upstream Project (GitHub)         │
+    │   ─────────────────────────         │
+    │   • InioX/matugen                   │
+    │   • sentriz/cliphist                │
+    │   • etc.                            │
+    └─────────────────────────────────────┘
+                    │
+                    │ New Release: v3.2.0
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Release Published                 │
+    │   ─────────────────                 │
+    │   Tag: v3.2.0                       │
+    │   Tarball: matugen-3.2.0.tar.gz     │
+    └─────────────────────────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 2: RENOVATE BOT DETECTION                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+                    │
+                    │ Webhook/Polling
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Renovate Bot                      │
+    │   ─────────────                     │
+    │   • Scans spec files                │
+    │   • Reads renovate comments         │
+    │   • Detects version change          │
+    │     3.1.0 → 3.2.0                   │
+    └─────────────────────────────────────┘
+                    │
+                    │ Creates Pull Request
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   GitHub Pull Request               │
+    │   ─────────────────────             │
+    │   Title: "Update matugen to 3.2.0"  │
+    │   Changes:                          │
+    │   - Version: 3.1.0                  │
+    │   + Version: 3.2.0                  │
+    └─────────────────────────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 3: HUMAN REVIEW                                                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+                    │
+                    │ You Review
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   👤 Maintainer Review              │
+    │   ────────────────────              │
+    │   • Check changelog                 │
+    │   • Verify changes                  │
+    │   • Test if needed                  │
+    │   • Click "Merge"                   │
+    └─────────────────────────────────────┘
+                    │
+                    │ Merge to main
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Git Repository (main branch)      │
+    │   ──────────────────────────        │
+    │   Commit: "Update matugen to 3.2.0" │
+    │   Changed: packages/matugen/*.spec  │
+    └─────────────────────────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 4: GITHUB ACTIONS AUTOMATION                                           │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+                    │
+                    │ Push Event Trigger
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   GitHub Actions Workflow           │
+    │   ───────────────────────           │
+    │   Trigger: .github/workflows/       │
+    │           copr-build.yml            │
+    └─────────────────────────────────────┘
+                    │
+                    ↓
+    ╔═════════════════════════════════════╗
+    ║  JOB 1: DETECT CHANGES              ║
+    ╚═════════════════════════════════════╝
+                    │
+    ┌───────────────┴───────────────┐
+    │ • git diff HEAD~1 HEAD        │
+    │ • Find changed *.spec files   │
+    │ • Extract package names       │
+    │ • Output: ["matugen"]         │
+    └───────────────┬───────────────┘
+                    │
+                    ↓
+    ╔═════════════════════════════════════╗
+    ║  JOB 2: BUILD (Matrix)              ║
+    ╚═════════════════════════════════════╝
+                    │
+    ┌───────────────┴────────────────┐
+    │ Step 1: Install copr-cli       │
+    │ ─────────────────────────────  │
+    │ • dnf install copr-cli         │
+    └───────────────┬────────────────┘
+                    │
+    ┌───────────────┴────────────────┐
+    │ Step 2: Configure copr-cli     │
+    │ ─────────────────────────────  │
+    │ • Read COPR_CONFIG secret      │
+    │ • Write ~/.config/copr         │
+    └───────────────┬────────────────┘
+                    │
+    ┌───────────────┴────────────────┐
+    │ Step 3: Trigger Copr Rebuild   │
+    │ ─────────────────────────────  │
+    │ • copr-cli build-package       │
+    │   --name matugen PROJECT       │
+    │ • Flag: --nowait               │
+    └───────────────┬────────────────┘
+                    │
+                    ↓
+    ╔═════════════════════════════════════╗
+    ║  JOB 3: NOTIFY                      ║
+    ╚═════════════════════════════════════╝
+                    │
+    ┌───────────────┴────────────────┐
+    │ • Generate summary             │
+    │ • Show build status            │
+    │ • Link to Copr builds          │
+    └───────────────┬────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 5: COPR BUILD SYSTEM                                                   │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+                    │
+                    │ Rebuild Triggered
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Copr SCM Processing               │
+    │   ───────────────────               │
+    │   • Clone Git repository            │
+    │   • Find spec file                  │
+    │   • Download sources (spectool)     │
+    │   • Build SRPM                      │
+    └─────────────────────────────────────┘
+                    │
+                    │ SRPM Ready
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Copr Build Queue                  │
+    │   ────────────────                  │
+    │   Build ID: #12345                  │
+    │   Package: matugen-3.2.0-1.fc39     │
+    │   Status: waiting                   │
+    └─────────────────────────────────────┘
+                    │
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Build Workers (Parallel)          │
+    │   ────────────────────────          │
+    │   ┌─────────────────────────┐       │
+    │   │  Fedora 39 x86_64       │       │
+    │   │  Status: building...    │       │
+    │   └─────────────────────────┘       │
+    │   ┌─────────────────────────┐       │
+    │   │  Fedora 40 x86_64       │       │
+    │   │  Status: building...    │       │
+    │   └─────────────────────────┘       │
+    │   ┌─────────────────────────┐       │
+    │   │  Fedora Rawhide x86_64  │       │
+    │   │  Status: building...    │       │
+    │   └─────────────────────────┘       │
+    └─────────────────────────────────────┘
+                    │
+                    │ All builds complete
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Build Results                     │
+    │   ─────────────                     │
+    │   ✅ Fedora 39 x86_64 - succeeded   │
+    │   ✅ Fedora 40 x86_64 - succeeded   │
+    │   ✅ Fedora Rawhide - succeeded     │
+    └─────────────────────────────────────┘
+
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PHASE 6: PACKAGE DISTRIBUTION                                                │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+                    │
+                    │ Publish to repository
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   Copr Repository                   │
+    │   ────────────────                  │
+    │   https://copr.fedorainfracloud.org/│
+    │   coprs/username/project/           │
+    │                                     │
+    │   Packages Available:               │
+    │   • matugen-3.2.0-1.fc39.x86_64.rpm │
+    │   • matugen-3.2.0-1.fc40.x86_64.rpm │
+    └─────────────────────────────────────┘
+                    │
+                    │ Users install
+                    ↓
+    ┌─────────────────────────────────────┐
+    │   End User Systems                  │
+    │   ────────────────                  │
+    │   $ sudo dnf install matugen        │
+    │   Installing: matugen-3.2.0         │
+    │   ✅ Complete!                      │
+    └─────────────────────────────────────┘
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           PARALLEL OPERATIONS                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Multiple Packages Changed:
+┌──────────────┬──────────────┬──────────────┐
+│  matugen     │  cliphist    │  scenefx     │
+│  ──────────  │  ─────────   │  ────────    │
+│  Build SRPM  │  Build SRPM  │  Build SRPM  │
+│      ↓       │      ↓       │      ↓       │
+│  Submit      │  Submit      │  Submit      │
+│      ↓       │      ↓       │      ↓       │
+│  Copr Queue  │  Copr Queue  │  Copr Queue  │
+└──────────────┴──────────────┴──────────────┘
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           TIMELINE ESTIMATE                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+│ Upstream Release          │ Instant
+├───────────────────────────┼───────────────────────────────────
+│ Renovate Detection        │ < 1 hour (depends on schedule)
+├───────────────────────────┼───────────────────────────────────
+│ PR Creation               │ < 1 minute
+├───────────────────────────┼───────────────────────────────────
+│ Human Review & Merge      │ Variable (you decide!)
+├───────────────────────────┼───────────────────────────────────
+│ GitHub Actions Trigger    │ < 10 seconds
+├───────────────────────────┼───────────────────────────────────
+│ Copr Rebuild Command      │ < 5 seconds
+├───────────────────────────┼───────────────────────────────────
+│ Copr SCM Processing       │ 1-3 minutes (clone, SRPM build)
+├───────────────────────────┼───────────────────────────────────
+│ Copr Build Queue          │ 1-10 minutes (depends on load)
+├───────────────────────────┼───────────────────────────────────
+│ Copr Package Build        │ 5-30 minutes (depends on package)
+├───────────────────────────┼───────────────────────────────────
+│ Repository Publication    │ < 1 minute
+├───────────────────────────┼───────────────────────────────────
+│ TOTAL (automated parts)   │ ~10-50 minutes after merge
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           TRIGGER POINTS                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Automatic Triggers:
+  ✅ Push to main branch with *.spec file changes
+  ✅ Renovate PR merged
+  ✅ Manual spec file edit committed
+
+Manual Triggers:
+  🔘 GitHub Actions UI: "Run workflow"
+  🔘 GitHub CLI: gh workflow run
+  🔘 Manual Copr submission (bypass GitHub Actions)
+
+Does NOT Trigger:
+  ❌ Pull request creation (detection only)
+  ❌ Non-spec file changes
+  ❌ Changes to other branches
+  ❌ Draft PRs
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           ERROR HANDLING                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+Error Point                  Action Taken
+────────────────────────────────────────────────────────────
+❌ Copr package not found    → Job fails, check package config
+❌ Rebuild trigger fails     → Job fails, check credentials
+❌ Copr SCM clone fails      → Build fails in Copr
+❌ Copr SRPM build fails     → Build fails, check spec/sources
+❌ Copr package build fails  → Email from Copr (if configured)
+❌ Multiple packages         → Builds continue independently
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           MONITORING POINTS                                  ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 GitHub Actions Dashboard
+   → https://github.com/USERNAME/copr/actions
+   → Shows: Workflow runs, job status, logs, artifacts
+
+📊 Copr Project Page
+   → https://copr.fedorainfracloud.org/coprs/PROJECT/
+   → Shows: Builds, packages, settings
+
+📊 Copr Build Details
+   → https://copr.fedorainfracloud.org/coprs/PROJECT/build/ID/
+   → Shows: Build logs, artifacts, per-chroot status
+
+📧 Email Notifications (optional)
+   → Configure in Copr project settings
+   → Receive alerts on build success/failure
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           LEGEND                                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+  →   Flow/Direction
+  ↓   Next step
+  ✅  Success/Enabled
+  ❌  Failure/Disabled
+  🔘  Manual action required
+  📊  Monitoring point
+  👤  Human interaction
+  🤖  Automated process
+  ⏱️  Time-dependent

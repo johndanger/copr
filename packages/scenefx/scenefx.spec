@@ -1,4 +1,5 @@
 Name:           scenefx
+# renovate: datasource=github-releases depName=wlrfx/scenefx
 Version:        0.4.1
 Release:        1%?dist
 
@@ -29,7 +30,7 @@ BuildRequires:  pkgconfig(wlroots-0.19)
 
 
 Packager:       Atmois <atmois@atmois.com>
- 
+
 %description
 %{summary}
 
