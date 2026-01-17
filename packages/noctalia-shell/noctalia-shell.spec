@@ -1,6 +1,7 @@
 %global debug_package %{nil}
 
 Name:           noctalia-shell
+# renovate: datasource=github-releases depName=noctalia-dev/noctalia-shell
 Version:		4.1.0
 Release:        1%?dist
 Summary:        A Quickshell-based custom shell setup
