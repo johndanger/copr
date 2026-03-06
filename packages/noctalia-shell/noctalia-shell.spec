@@ -2,7 +2,7 @@
 
 Name:           noctalia-shell
 # renovate: datasource=github-releases depName=noctalia-dev/noctalia-shell
-Version:		4.6.3
+Version:		4.6.4
 Release:        1%?dist
 Summary:        A Quickshell-based custom shell setup
 
