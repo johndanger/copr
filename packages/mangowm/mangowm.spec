@@ -1,11 +1,11 @@
-Name:           mangowc
-# renovate: datasource=github-releases depName=DreamMaoMao/mangowc
+Name:           mangowm
+# renovate: datasource=github-releases depName=mangowm/mango
 Version:        0.12.7
 Release:        1%{?dist}
 Summary:        wayland compositor base wlroots and scenefx (dwm but wayland)
 License:        GPL-3.0
 Packager:       metcya <metcya@gmail.com>
-URL:            https://github.com/DreamMaoMao/mangowc
+URL:            https://github.com/mangowm/mango
 Source0:        %{url}/archive/%{version}.tar.gz
 
 BuildRequires:  meson
