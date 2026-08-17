@@ -2,7 +2,7 @@
 
 Name:           matugen
 # renovate: datasource=github-releases depName=InioX/matugen
-Version:        4.1.0
+Version:        4.2.0
 Release:        0%{?dist}
 Summary:        Material you color generation tool with templates
 
