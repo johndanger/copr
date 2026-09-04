@@ -2,7 +2,7 @@
 
 Name:           mangowm
 # renovate: datasource=github-releases depName=mangowm/mango
-Version:        0.12.9
+Version:        0.16.3
 Release:        1%{?dist}
 Summary:        A modern, lightweight, high-performance Wayland compositor built on dwl
 License:        GPL-3.0-or-later AND MIT AND X11 AND CC0-1.0
